@@ -113,9 +113,14 @@
                 return toDeg(Math.asin(rz));
             }
             function getLeftTiltAngleFromMotionEvent(motionEvent){
-                var gravityX = (motionEvent.acceleration.x || 0) - (motionEvent.accelerationIncludingGravity.x || 0);
-                var gravityY = (motionEvent.acceleration.y || 0) - (motionEvent.accelerationIncludingGravity.y || 0);
-                var gravityZ = (motionEvent.acceleration.z || 0) - (motionEvent.accelerationIncludingGravity.z || 0);
+                if(typeof(motionEvent.acceleration.x) != "number" ||
+                   typeof(motionEvent.acceleration.y) != "number" ||
+                   typeof(motionEvent.acceleration.z) != "number"){
+                    return 0;
+                }
+                var gravityX = (motionEvent.acceleration.x) - (motionEvent.accelerationIncludingGravity.x);
+                var gravityY = (motionEvent.acceleration.y) - (motionEvent.accelerationIncludingGravity.y);
+                var gravityZ = (motionEvent.acceleration.z) - (motionEvent.accelerationIncludingGravity.z);
                 var screenAngleRev = toRad(-screen.orientation.angle);
                 var rightX = Math.cos(screenAngleRev);
                 var rightY = Math.sin(screenAngleRev);
