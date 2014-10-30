@@ -160,7 +160,33 @@
             };
         }
         var inputDevice = new InputDevice();
-        var highScore = 0;
+
+
+        //
+        // High Score(Cookie Save Load)
+        //
+
+        var HIGHSCORE_KEY = "misohena.js_skigame.highscore";
+        var highScore = loadHighScore();
+        function saveHighScore(value)
+        {
+            document.cookie = HIGHSCORE_KEY + "=" + value + "; max-age="+60*60*24*365;
+            document.cookie = "a=a; max-age="+60*60*24*365;
+            document.cookie = "z=bbb; max-age="+60*60*24*365;
+
+        }
+        function loadHighScore()
+        {
+            var match = new RegExp("^(?:|.*;\\s*)" + HIGHSCORE_KEY.replace(".","\\.","g") + "\\s*=\\s*([^;]*).*").exec(document.cookie);
+            if(match){
+                var score = parseInt(match[1],10);
+                if(!isNaN(score)){
+                    return score;
+                }
+            }
+            return 0;
+        }
+
 
 
         //
@@ -772,6 +798,8 @@
             startTimer();
         }
         function modeGameOver(){
+            saveHighScore(highScore);
+
             game.clearDamageEffect();
             function drawFlash(){
                 var ctx = canvas.getContext("2d");
