@@ -1,0 +1,17 @@
+* SKi Game
+
+デバイスを左右に傾けて操作するスキーゲームです。ゲートをくぐって得点を競います。
+
+次の機能に対応したブラウザが必要です。
+
+- canvas要素([[https://html.spec.whatwg.org/#the-canvas-element][The canvas element]])
+- devicemotionイベント([[http://www.w3.org/TR/orientation-event/][DeviceOrientation Event Specification]])
+- screen.orientation.angleプロパティ([[http://www.w3.org/TR/screen-orientation/][The Screen Orientation API]])
+
+** Play
+
+[[http://misohena.github.io/js_skigame/]]
+
+** Development Note
+
+[[http://misohena.jp/blog/2014-10-30-js_skigame.html]]

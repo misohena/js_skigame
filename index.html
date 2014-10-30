@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ski Game</title>
+    <script src="gameboot.js"></script>
+  </head>
+  <body>
+    <h1>Ski Game</h1>
+
+    <div style="border:1px solid black; width:640px; height:480px;">
+      <img src="screenshot.png" />
+      <script>
+        misohena.GameBoot.writePlayButton([
+          "gamescreen.js",
+          "js_skigame.js"],
+          function(){return misohena.js_skigame.create();});
+      </script>
+    </div>
+    <div lang="ja">
+      <h2>スキーヤーの移動方法:</h2>
+      <ul>
+        <li>動きセンサー: デバイスを左右に傾ける。</li>
+        <li>キーボード: 矢印キー左右を押す。</li>
+      </ul>
+    </div>
+    <div lang="en">
+      <h2>Move Skier:</h2>
+      <ul>
+        <li>Motion Sensor: Tilt device left and right.</li>
+        <li>Keyboard: Press left and right arrow keys.</li>
+      </ul>
+    </div>
+
+  </body>
+</html>
