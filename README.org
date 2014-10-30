@@ -10,7 +10,7 @@
 
 ** Screenshot
 
-[[file:./screenshot.png]]
+[[http://misohena.github.io/js_skigame/][file:./screenshot.png]]
 
 ** Play
 
