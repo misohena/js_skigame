@@ -8,6 +8,10 @@
 - devicemotionイベント([[http://www.w3.org/TR/orientation-event/][DeviceOrientation Event Specification]])
 - screen.orientation.angleプロパティ([[http://www.w3.org/TR/screen-orientation/][The Screen Orientation API]])
 
+** Screenshot
+
+[[file:./screenshot.png]]
+
 ** Play
 
 [[http://misohena.github.io/js_skigame/]]
