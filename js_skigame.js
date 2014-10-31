@@ -245,7 +245,7 @@
             //
             // Life & Damage
             //
-            var MAX_DAMAGE_TIME = 10;
+            var MAX_DAMAGE_TIME = 10*16;
             var damageTime = 0;
             function addDamage()
             {
@@ -262,10 +262,13 @@
             {
                 return life;
             }
-            function stepDamageEffect()
+            function stepDamageEffect(dt)
             {
                 if(damageTime){
-                    --damageTime;
+                    damageTime -= dt;
+                    if(damageTime < 0){
+                        damageTime = 0;
+                    }
                 }
             }
             this.clearDamageEffect = clearDamageEffect;
@@ -319,16 +322,19 @@
                 {
                     return {x0:x-RADIUS_X,y0:y,x1:x+RADIUS_X,y1:y+RADIUS_Y};
                 }
-                function step()
+                function step(dt)
                 {
-                    vx += Math.sin(inputDevice.getKeyAngle()*(Math.PI/180)) * 20;
+                    var tscale = dt/16;
+
+                    var inputAcc = Math.sin(inputDevice.getKeyAngle()*(Math.PI/180)) * 20;
+                    vx += inputAcc * tscale;
                     var drag = Math.min(
                         0.00 + Math.abs(vx*0.1) + vx*vx*0.015,
                         Math.abs(vx));
-                    vx += (vx > 0 ? -1 : 1) * drag;
+                    vx += (vx > 0 ? -1 : 1) * drag * tscale;
 
-                    x += vx;
-                    y += vy;
+                    x += vx * tscale;
+                    y += vy * tscale;
                     if(x < -SCREEN_W/2){
                         x = -SCREEN_W/2;
                     }
@@ -416,11 +422,12 @@
             }
             function GateGenerator()
             {
-                var next = 10;
+                var next = 10*16;
 
-                this.step = function(){
-                    if(--next<= 0){
-                        next = Math.round(
+                this.step = function(dt){
+                    next -= dt;
+                    if(next<= 0){
+                        next = 16*Math.round(
                             time < 90000 ? 100-40*time/90000 :
                             (20+40*(100000/(100000+(time-90000)))) + (Math.random() * 40 - 20));
 
@@ -563,10 +570,10 @@
             {
                 time += dt;
                 roadGenerator.step();
-                gateGenerator.step();
+                gateGenerator.step(dt);
                 stepObjects(gates);
-                skier.step();
-                stepDamageEffect();
+                skier.step(dt);
+                stepDamageEffect(dt);
                 drawField();
             }
 
@@ -759,28 +766,77 @@
         }
         function modePlaying(){
             inputDevice.reset();
+
             var STEP_PERIOD = 16;
-            function step()
+            var requestAnimationFrame =
+                    window.requestAnimationFrame ||
+                    window.mozRequestAnimationFrame ||
+                    window.webkitRequestAnimationFrame ||
+                    window.msRequestAnimationFrame;
+            var cancelAnimationFrame =
+                    window.cancelAnimationFrame ||
+                    window.mozCancelAnimationFrame;
+            if(!requestAnimationFrame || !cancelAnimationFrame){
+                requestAnimationFrame = function(cb){return window.setTimeout(cb, STEP_PERIOD);};
+                cancelAnimationFrame = function(id){return window.clearTimeout(id);};
+            }
+            else{
+                console.log("use requestAnimationFrame");
+            }
+
+            var lastTime = Date.now();
+            function step(dt)
             {
-                game.step(STEP_PERIOD);
+                game.step(dt);
                 if(game.getLife() <= 0){
                     nextMode();
+                    return false;
+                }
+                return true;
+            }
+            function onTimer()
+            {
+                nextTimer();
+
+                var currTime = Date.now();
+                if(currTime < lastTime || currTime - lastTime > 100){
+                    lastTime = currTime - STEP_PERIOD;
+                }
+
+                if(true){
+                    //fixed frame rate
+                    while(lastTime < currTime){
+                        lastTime += STEP_PERIOD;
+
+                        if(!step(STEP_PERIOD)){
+                            return;
+                        }
+                    }
+                }
+                else{
+                    // variable frame rate
+                    step(currTime - lastTime);
+                }
+                lastTime = currTime;
+            }
+            var timerId = null;;
+            function startTimer(){
+                if(timerId === null){
+                    timerId = requestAnimationFrame(onTimer);
                 }
             }
-            var intervalId = null;;
-            function startTimer(){
-                if(intervalId === null){
-                    intervalId = setInterval(step, STEP_PERIOD);
-                }
+            function nextTimer(){
+                timerId = null;
+                startTimer();
             }
             function stopTimer(){
-                if(intervalId !== null){
-                    clearInterval(intervalId);
-                    intervalId = null;
+                if(timerId !== null){
+                    cancelAnimationFrame(timerId);
+                    timerId = null;
                 }
             }
             var togglePause = function(){
-                if(intervalId === null){
+                if(timerId === null){
                     startTimer();
                 }
                 else{
