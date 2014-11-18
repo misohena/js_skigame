@@ -96,6 +96,10 @@
                 angle = 0;
             };
         }
+        function getScreenOrientationAngle()
+        {
+            return (screen && screen.orientation && screen.orientation.angle) || window.orientation || 0;
+        }
         function InputDeviceOrientation()
         {
             var keyAngle = 0;
@@ -104,11 +108,11 @@
             function toDeg(rad){return rad*(180/Math.PI);}
 
             function getLeftTiltAngleFromOrientationEvent(orientationEvent){
-                // r = rotz(alpha)*rotx(beta)*roty(gamma)*rotz(-screen.orientation.angle)*colvec[1,0,0]
+                // r = rotz(alpha)*rotx(beta)*roty(gamma)*rotz(-getScreenOrientationAngle())*colvec[1,0,0]
                 // tilt = sin^-1(r.z)
                 var b = toRad(orientationEvent.beta || 0);
                 var c = toRad(orientationEvent.gamma || 0);
-                var d = toRad(-screen.orientation.angle);
+                var d = toRad(-getScreenOrientationAngle());
                 var rz = Math.sin(b)*Math.sin(d)-Math.cos(b)*Math.sin(c)*Math.cos(d);
                 return toDeg(Math.asin(rz));
             }
@@ -121,7 +125,7 @@
                 var gravityX = (motionEvent.acceleration.x) - (motionEvent.accelerationIncludingGravity.x);
                 var gravityY = (motionEvent.acceleration.y) - (motionEvent.accelerationIncludingGravity.y);
                 var gravityZ = (motionEvent.acceleration.z) - (motionEvent.accelerationIncludingGravity.z);
-                var screenAngleRev = toRad(-screen.orientation.angle);
+                var screenAngleRev = toRad(-getScreenOrientationAngle());
                 var rightX = Math.cos(screenAngleRev);
                 var rightY = Math.sin(screenAngleRev);
                 var dotGR = rightX * gravityX  + rightY * gravityY;
@@ -150,7 +154,7 @@
         function InputDevice()
         {
             var key = new InputDeviceKeyboard();
-            var ori = (window.DeviceOrientationEvent && window.screen && screen.orientation && typeof(screen.orientation.angle) == "number") ? new InputDeviceOrientation() : null;
+            var ori = (window.DeviceOrientationEvent && typeof(getScreenOrientationAngle()) == "number") ? new InputDeviceOrientation() : null;
             this.getKeyAngle = function(){
                 return key.getKeyAngle() + (ori ? ori.getKeyAngle() : 0);
             };
