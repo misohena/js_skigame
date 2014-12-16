@@ -134,7 +134,8 @@
             }
 
             var getLeftTilt;
-            if(true){
+            if(false){
+                // acceleration values are different between iOS and Android.
                 getLeftTilt = getLeftTiltAngleFromMotionEvent;
                 window.addEventListener("devicemotion", updateAngle, false);
             }
